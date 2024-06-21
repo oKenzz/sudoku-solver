@@ -24,7 +24,6 @@ let createGrid = () => {
 
 let renderGrid = () => {
     const innerGrid = document.getElementsByClassName('inner-grid')
-
     for (let i = 0; i < map.length; i++){
         for (let j = 0; j < map.length; j++){
             base = Math.floor(i / 3) * 27 + (i % 3) * 3;
@@ -55,21 +54,40 @@ let generateMap = () => {
         for (let j = 0; j < 9; j++){
             const index = Math.floor(Math.random() * (18))
             const number = ratioNumber[index]
-            // TODO: Handle grid set
-            if (number != 0 && !((rowSets.at(i).has(number)) || columnSets.at(j).has(number))){
+            const innerGridNumber = getInnerGridFromRowAndColumn(i,j)
+            const gridNumber = getGrid(innerGridNumber)
+            if (number != 0 && !((rowSets.at(i).has(number)) || columnSets.at(j).has(number) || gridSets.at(gridNumber).has(number))){
                 map[i][j] = number;
                 rowSets[i].add(number)
                 columnSets[j].add(number)
+                gridSets[gridNumber].add(number)
             }
 
         }
     }
-
     console.log(map)
     console.log(rowSets)
     console.log(columnSets)
-    
+    console.log(gridSets)
     renderGrid()
+}
+
+let getInnerGridFromRowAndColumn = (row, column) => {
+    const subgridRowIndex = Math.floor(row / 3);
+    const subgridColumnIndex = Math.floor(column / 3);
+    const withinBlockRowIndex = row % 3;
+    const withinBlockColumnIndex = column % 3;
+    const baseNumber = (subgridRowIndex * 3 + subgridColumnIndex) * 9;
+    const overallNumber = baseNumber + (withinBlockRowIndex * 3) + withinBlockColumnIndex;
+    return overallNumber;
+}
+
+let getRowAndColumnFromInnerGrid = (number) => {
+    // TODO
+}
+
+let getGrid = (node) => {
+    return Math.floor(node / 9)
 }
 
 let addNumber = (number) => {
