@@ -71,34 +71,39 @@ const getCellFromRowAndColumn = (row, column) => {
 
 const getRowAndColumnFromCell = (cell) => {
   const position = cell % 9;
-  const baseRow = (position + 4) % 3;
+  const baseRow = Math.floor(position / 3);
   const baseColumn = position % 3;
-  console.log(baseRow);
-  console.log(baseColumn);
+  const gridNumber = getGrid(cell);
+  const row = baseRow + Math.floor(gridNumber / 3) * 3;
+  const column = baseColumn + gridNumber % 3 * 3;
+  return { row, column };
 };
 
 const getGrid = (cell) => {
   return Math.floor(cell / 9);
 };
 
+// TODO: Add error handling for unvalid inputs
 const addNumber = (index, number) => {
   const cell = cells[index];
   cell.textContent = number
-  // TODO:
-  // - Also add in the internal map
-  // - Need getRowAndColumnFromCell
+  const coordinates = getRowAndColumnFromCell(index);
+  const row = coordinates.row;
+  const column = coordinates.column;
+  map[row][column] = number
 };
 
+// TODO: Add error handling for unvalid inputs
 const removeNumber = (index) => {
   const cell = cells[index];
   cell.textContent = "";
-  // TODO:
-  // - Also remove in the internal map
-  // - Need getRowAndColumnFromCell
+  const coordinates = getRowAndColumnFromCell(index);
+  const row = coordinates.row;
+  const column = coordinates.column;
+  map[row][column] = 0
 };
 
 createGrid();
 initializeMap();
 generateMap();
 console.log(cells)
-getRowAndColumnFromCell(8)
