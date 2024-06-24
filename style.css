@@ -15,7 +15,8 @@
 
 #sudoku {
     display: grid;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
     width: 800px;
     height: 800px;
     border: 2px solid black;
