@@ -104,18 +104,23 @@ const getGrid = (cell) => {
 };
 
 const addNumber = (cell, number) => {
-  if (cell != null && number > 0) {
-    cell.textContent = number
-    const coordinates = getRowAndColumnFromCell(cells.indexOf(cell));
-    const row = coordinates.row;
-    const column = coordinates.column;
+  const index = cells.indexOf(cell);
+  const coordinates = getRowAndColumnFromCell(index);
+  const row = coordinates.row;
+  const column = coordinates.column;
+  if (cell != null && number > 0 && !(rowSets[row].has(number) || columnSets[column].has(number) || gridSets[getGrid(index)].has(number))) {
     if (map[row][column] == 0) {
       emptyCells -= 1;
     }
+    const prevNumber = map[row][column];
+    rowSets[row].delete(prevNumber);
+    columnSets[column].delete(prevNumber);
+    gridSets[getGrid(index)].delete(prevNumber)
     map[row][column] = number;
     rowSets[row].add(number);
     columnSets[column].add(number);
-    gridSets[getGrid(cells.indexOf(cell))].add(number);
+    gridSets[getGrid(index)].add(number);
+    cell.textContent = number
     if (emptyCells == 0) {
       if (isValid()) {
         alert("Well Done!");
@@ -127,18 +132,22 @@ const addNumber = (cell, number) => {
 };
 
 const removeNumber = (cell, e) => {
-  if (e.keyCode == 8) {
-    cell.textContent = "";
-    const coordinates = getRowAndColumnFromCell(cells.indexOf(cell));
+  if (cell != null) {
+    const index = cells.indexOf(cell);
+    const coordinates = getRowAndColumnFromCell(index);
     const row = coordinates.row;
     const column = coordinates.column;
     const number = map[row][column];
-    map[row][column] = 0;
-    rowSets[row].delete(number);
-    columnSets[column].delete(number);
-    gridSets[getGrid(cells.indexOf(cell))].delete(number);
-    emptyCells += 1;
-  };
+    if (e.keyCode == 8 && number != 0) {
+      map[row][column] = 0;
+      rowSets[row].delete(number);
+      columnSets[column].delete(number);
+      gridSets[getGrid(index)].delete(number);
+      emptyCells += 1;
+      cell.textContent = "";
+    };
+  }
+
 }
 
 const isValid = () => {
@@ -159,16 +168,14 @@ const solveSudoku = () => {
 const initialize = () => {
   createGrid();
   initializeMap()
-  generateMap();
+  // generateMap();
   console.log(cells)
 }
 
 // TODO:
 //  1. Change createGrid() to also intialize the map with number so eventListener is only applied to empty cells
 //  2. Lock in system mode to test (toggleable)
-//  3. When everything is filled => isValid()
-//  4. Handle proper addition and deletion of sets values,
-//  5. Implement solver, backtracking algorithm
+//  3. Implement solver, backtracking algorithm
 //
 // Ideas:
 //  - Selection, Have to lock in so you can try different numbers and follow through and determine if it makes sense
