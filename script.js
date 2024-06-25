@@ -23,6 +23,8 @@ const createGrid = () => {
   }
   document.addEventListener('keydown', (e) => addNumber(selected, Number(e.key)));
   document.addEventListener('keydown', (e) => removeNumber(selected, e))
+  const button = document.getElementsByClassName('basic-button')[0];
+  button.addEventListener("click", () => solveSudoku());
 };
 
 const select = (cell, e) => {
@@ -162,7 +164,6 @@ const isValid = () => {
 }
 
 const solveSudoku = () => {
-  // TODO:
 }
 
 const initialize = () => {
@@ -173,9 +174,8 @@ const initialize = () => {
 }
 
 // TODO:
-//  1. Change createGrid() to also intialize the map with number so eventListener is only applied to empty cells
+//  1. Implement solver, backtracking algorithm
 //  2. Lock in system mode to test (toggleable)
-//  3. Implement solver, backtracking algorithm
 //
 // Ideas:
 //  - Selection, Have to lock in so you can try different numbers and follow through and determine if it makes sense
