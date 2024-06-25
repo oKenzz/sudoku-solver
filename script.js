@@ -1,4 +1,4 @@
-const map = [];
+let map = [];
 const rowSets = [];
 const columnSets = [];
 const gridSets = [];
@@ -80,7 +80,6 @@ const generateMap = () => {
   renderGrid();
 };
 
-// Unecessary? just use indexOf
 const getCellFromRowAndColumn = (row, column) => {
   const subgridRowIndex = Math.floor(row / 3);
   const subgridColumnIndex = Math.floor(column / 3);
@@ -107,7 +106,7 @@ const getGrid = (cell) => {
 
 const addNumber = (cell, number) => {
   const index = cells.indexOf(cell);
-  const coordinates = getRowAndColumnFromCell(index);
+  const coordinates = getRowAndColumnFromCell(index); // Originally index
   const row = coordinates.row;
   const column = coordinates.column;
   if (cell != null && number > 0 && !(rowSets[row].has(number) || columnSets[column].has(number) || gridSets[getGrid(index)].has(number))) {
@@ -123,12 +122,10 @@ const addNumber = (cell, number) => {
     columnSets[column].add(number);
     gridSets[getGrid(index)].add(number);
     cell.textContent = number
-    if (emptyCells == 0) {
-      if (isValid()) {
-        alert("Well Done!");
-      } else {
-        alert("Not a valid sudoku!");
-      }
+  }
+  if (emptyCells == 0) {
+    if (isValid()) {
+      alert("Sudoku solved")
     }
   }
 };
@@ -164,13 +161,39 @@ const isValid = () => {
 }
 
 const solveSudoku = () => {
+  const copyOfMap = structuredClone(map)
+  const copyOfEmptyCells = emptyCells;
+  while (emptyCells != 0) {
+    for (let row = 0; row < 9; row++) {
+      for (let column = 0; column < 9; column++) {
+        if (map[row][column] == 0) {
+          const cellNumber = getCellFromRowAndColumn(row, column);
+          const cell = cells[cellNumber];
+          const candidates = getCandidates(cellNumber, row, column);
+          const index = Math.floor(Math.random() * candidates.length);
+          const number = candidates[index];
+          addNumber(cell, number);
+        }
+      }
+    }
+    map = copyOfMap;
+    emptyCells = copyOfEmptyCells;
+  }
+}
+
+const getCandidates = (cell, row, column) => {
+  const gridNumber = getGrid(cell);
+  const universe = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  const union = new Set([...gridSets[gridNumber], ...rowSets[row], ...columnSets[column]])
+  const candidates = new Set([...universe].filter(x => !union.has(x)));
+  return [...candidates];
 }
 
 const initialize = () => {
   createGrid();
   initializeMap()
   // generateMap();
-  console.log(cells)
+  // console.log(cells)
 }
 
 // TODO:
