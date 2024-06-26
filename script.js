@@ -4,7 +4,6 @@ const columnSets = [];
 const gridSets = [];
 const ratioNumber = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 let cells = [];
-let emptyCells = 81;
 let selected = null;
 
 const createGrid = () => {
@@ -22,7 +21,7 @@ const createGrid = () => {
     }
   }
   document.addEventListener('keydown', (e) => addNumber(selected, Number(e.key)));
-  document.addEventListener('keydown', (e) => removeNumber(selected, e))
+  document.addEventListener('keydown', (e) => removeNumber(selected, e.key, false))
   const button = document.getElementsByClassName('basic-button')[0];
   button.addEventListener("click", () => solveSudoku());
 };
@@ -73,7 +72,6 @@ const generateMap = () => {
         rowSets[i].add(number);
         columnSets[j].add(number);
         gridSets[gridNumber].add(number);
-        emptyCells -= 1;
       }
     }
   }
@@ -110,9 +108,6 @@ const addNumber = (cell, number) => {
   const row = coordinates.row;
   const column = coordinates.column;
   if (cell != null && number > 0 && !(rowSets[row].has(number) || columnSets[column].has(number) || gridSets[getGrid(index)].has(number))) {
-    if (map[row][column] == 0) {
-      emptyCells -= 1;
-    }
     const prevNumber = map[row][column];
     rowSets[row].delete(prevNumber);
     columnSets[column].delete(prevNumber);
@@ -122,27 +117,28 @@ const addNumber = (cell, number) => {
     columnSets[column].add(number);
     gridSets[getGrid(index)].add(number);
     cell.textContent = number
-  }
-  if (emptyCells == 0) {
-    if (isValid()) {
-      alert("Sudoku solved")
+    if (completeSudoku()) {
+      if (isValid()) {
+        console.log("Sudoku solved")
+      }
     }
+    return true;
   }
+  return false;
 };
 
-const removeNumber = (cell, e) => {
+const removeNumber = (cell, key, solving) => {
   if (cell != null) {
     const index = cells.indexOf(cell);
     const coordinates = getRowAndColumnFromCell(index);
     const row = coordinates.row;
     const column = coordinates.column;
     const number = map[row][column];
-    if (e.keyCode == 8 && number != 0) {
+    if (key == "Backspace" && number != 0 || solving) {
       map[row][column] = 0;
       rowSets[row].delete(number);
       columnSets[column].delete(number);
       gridSets[getGrid(index)].delete(number);
-      emptyCells += 1;
       cell.textContent = "";
     };
   }
@@ -160,33 +156,32 @@ const isValid = () => {
   return true;
 }
 
-const solveSudoku = () => {
-  const copyOfMap = structuredClone(map)
-  const copyOfEmptyCells = emptyCells;
-  while (emptyCells != 0) {
-    for (let row = 0; row < 9; row++) {
-      for (let column = 0; column < 9; column++) {
-        if (map[row][column] == 0) {
-          const cellNumber = getCellFromRowAndColumn(row, column);
-          const cell = cells[cellNumber];
-          const candidates = getCandidates(cellNumber, row, column);
-          const index = Math.floor(Math.random() * candidates.length);
-          const number = candidates[index];
-          addNumber(cell, number);
-        }
-      }
+const completeSudoku = () => {
+  for (let row = 0; row < 9; row++) {
+    for (let column = 0; column < 9; column++) {
+      if (map[row][column] == 0) return false;
     }
-    map = copyOfMap;
-    emptyCells = copyOfEmptyCells;
   }
+  return true;
 }
 
-const getCandidates = (cell, row, column) => {
-  const gridNumber = getGrid(cell);
-  const universe = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-  const union = new Set([...gridSets[gridNumber], ...rowSets[row], ...columnSets[column]])
-  const candidates = new Set([...universe].filter(x => !union.has(x)));
-  return [...candidates];
+const solveSudoku = () => {
+  for (let row = 0; row < 9; row++) {
+    for (let column = 0; column < 9; column++) {
+      if (map[row][column] == 0) {
+        const cellNumber = getCellFromRowAndColumn(row, column);
+        const cell = cells[cellNumber];
+        for (let number = 1; number <= 9; number++) {
+          if (addNumber(cell, number)) {
+            if (solveSudoku()) return true;
+          }
+        }
+        removeNumber(cell, null, true)
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 const initialize = () => {
@@ -197,8 +192,10 @@ const initialize = () => {
 }
 
 // TODO:
-//  1. Implement solver, backtracking algorithm
-//  2. Lock in system mode to test (toggleable)
+//  1. Generate map with solve
+//  2. Reset button
+//  3. Optimize???
+//  4. Lock in system mode to test (toggleable)
 //
 // Ideas:
 //  - Selection, Have to lock in so you can try different numbers and follow through and determine if it makes sense
