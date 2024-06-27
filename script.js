@@ -54,7 +54,7 @@ const renderGrid = () => {
 };
 
 const initializeMap = () => {
-  for (let i = 0; i < 9; i++) {
+  for (let i = 0; i < map.length; i++) {
     map.push([0, 0, 0, 0, 0, 0, 0, 0, 0]);
     rowSets.push(new Set());
     columnSets.push(new Set());
@@ -66,8 +66,8 @@ const initializeMap = () => {
 const generateSudoku = async () => {
   // Start with reseting the map
   let maxNumbersPlaced = 8;
-  for (let i = 0; i < 9; i++) {
-    for (let j = 0; j < 9; j++) {
+  for (let i = 0; i < map.length; i++) {
+    for (let j = 0; j < map.length; j++) {
       const number = Math.floor(Math.random() * 9) + 1;
       const cellNumber = getCellFromRowAndColumn(i, j);
       const gridNumber = getGrid(cellNumber);
@@ -85,8 +85,8 @@ const generateSudoku = async () => {
 
 const removeRandomCells = () => {
   const removeFactor = 0.8;
-  for (let i = 0; i < 9; i++) {
-    for (let j = 0; j < 9; j++) {
+  for (let i = 0; i < map.length; i++) {
+    for (let j = 0; j < map.length; j++) {
       const cellNumber = getCellFromRowAndColumn(i, j);
       let factor = Math.random();
       if (factor < removeFactor) {
