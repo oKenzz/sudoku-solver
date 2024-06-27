@@ -21,8 +21,10 @@ const createGrid = () => {
   }
   document.addEventListener('keydown', (e) => addNumber(selected, Number(e.key)));
   document.addEventListener('keydown', (e) => removeNumber(selected, e.key, false))
-  const button = document.getElementsByClassName('basic-button')[0];
-  button.addEventListener("click", () => solveSudoku());
+  const buttons = document.getElementsByClassName('basic-button');
+  const generateButton = buttons[0];
+  const solveButton = buttons[1];
+  solveButton.addEventListener("click", () => solveSudoku());
 };
 
 const select = (cell, e) => {
@@ -70,14 +72,10 @@ const generateMap = () => {
       const cellNumber = getCellFromRowAndColumn(i, j);
       const gridNumber = getGrid(cellNumber);
       if (number != 0 && !(rowSets.at(i).has(number) || columnSets.at(j).has(number) || gridSets.at(gridNumber).has(number))) {
-        map[i][j] = number;
-        rowSets[i].add(number);
-        columnSets[j].add(number);
-        gridSets[gridNumber].add(number);
+        addNumber(cells[cellNumber], number)
       }
     }
   }
-  renderGrid();
 };
 
 const removeRandomCells = (difficulty) => {
@@ -206,7 +204,6 @@ const initialize = () => {
 //  2. Reset button
 //  3. Optimize??? (Freezes on extreme difficulty)
 //  4. Modularize
-//  5. Visualizer
 //  6. Lock in system mode to test (toggleable)
 //
 // Ideas:
