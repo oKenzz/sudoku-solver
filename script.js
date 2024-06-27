@@ -24,7 +24,8 @@ const createGrid = () => {
   const buttons = document.getElementsByClassName('basic-button');
   const generateButton = buttons[0];
   const solveButton = buttons[1];
-  solveButton.addEventListener("click", () => solveSudoku());
+  generateButton.addEventListener("click", () => generateSudoku())
+  solveButton.addEventListener("click", () => solveSudoku(true));
 };
 
 const select = (cell, e) => {
@@ -62,24 +63,37 @@ const initializeMap = () => {
   }
 };
 
-const generateMap = () => {
-  // 1. Place out random numbers
-  // 2. Create a solution
-  // 3. Remove numbers to create a puzzle
+const generateSudoku = async () => {
+  // Start with reseting the map
+  let maxNumbersPlaced = 8;
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
-      const number = Math.floor(Math.random() * 9);
+      const number = Math.floor(Math.random() * 9) + 1;
       const cellNumber = getCellFromRowAndColumn(i, j);
       const gridNumber = getGrid(cellNumber);
-      if (number != 0 && !(rowSets.at(i).has(number) || columnSets.at(j).has(number) || gridSets.at(gridNumber).has(number))) {
-        addNumber(cells[cellNumber], number)
+      let placeNumber = Math.random();
+      if (maxNumbersPlaced == 0) break;
+      if (placeNumber >= 0.5 && !(rowSets.at(i).has(number) || columnSets.at(j).has(number) || gridSets.at(gridNumber).has(number))) {
+        addNumber(cells[cellNumber], number);
+        maxNumbersPlaced--
       }
     }
   }
+  await solveSudoku(false)
+  removeRandomCells()
 };
 
-const removeRandomCells = (difficulty) => {
-  // TODO:
+const removeRandomCells = () => {
+  const removeFactor = 0.8;
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      const cellNumber = getCellFromRowAndColumn(i, j);
+      let factor = Math.random();
+      if (factor < removeFactor) {
+        removeNumber(cells[cellNumber], null, true);
+      }
+    }
+  }
 }
 
 const reset = () => {
@@ -112,7 +126,7 @@ const getGrid = (cell) => {
 
 const addNumber = (cell, number) => {
   const index = cells.indexOf(cell);
-  const coordinates = getRowAndColumnFromCell(index); // Originally index
+  const coordinates = getRowAndColumnFromCell(index);
   const row = coordinates.row;
   const column = coordinates.column;
   if (cell != null && number > 0 && !(rowSets[row].has(number) || columnSets[column].has(number) || gridSets[getGrid(index)].has(number))) {
@@ -143,14 +157,16 @@ const removeNumber = (cell, key, solving) => {
     const column = coordinates.column;
     const number = map[row][column];
     if (key == "Backspace" && number != 0 || solving) {
+      console.log("HELLO")
+      console.log(map)
       map[row][column] = 0;
+      console.log(map)
       rowSets[row].delete(number);
       columnSets[column].delete(number);
       gridSets[getGrid(index)].delete(number);
       cell.textContent = "";
     };
   }
-
 }
 
 const isValid = () => {
@@ -173,7 +189,7 @@ const completeSudoku = () => {
   return true;
 }
 
-const solveSudoku = async (delay = 10) => {
+const solveSudoku = async (visualizer, delay = 10) => {
   for (let row = 0; row < map.length; row++) {
     for (let column = 0; column < map.length; column++) {
       if (map[row][column] == 0) {
@@ -181,8 +197,8 @@ const solveSudoku = async (delay = 10) => {
         const cell = cells[cellNumber];
         for (let number = 1; number <= 9; number++) {
           if (addNumber(cell, number)) {
-            await new Promise(resolve => setTimeout(resolve, delay));
-            if (await solveSudoku(delay)) return true;
+            if (visualizer) await new Promise(resolve => setTimeout(resolve, delay));
+            if (await solveSudoku(visualizer)) return true;
           }
         }
         removeNumber(cell, null, true);
