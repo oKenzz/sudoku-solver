@@ -24,8 +24,10 @@ const createGrid = () => {
   const buttons = document.getElementsByClassName('basic-button');
   const generateButton = buttons[0];
   const solveButton = buttons[1];
+  const resetButton = buttons[2];
   generateButton.addEventListener("click", () => generateSudoku());
   solveButton.addEventListener("click", () => solveSudoku(true));
+  resetButton.addEventListener("click", () => reset());
 };
 
 const select = (cell, e) => {
@@ -64,9 +66,8 @@ const initializeMap = () => {
 };
 
 const generateSudoku = async () => {
-  // Start with reseting the map
   reset();
-  let maxNumbersPlaced = 8;
+  let maxNumbersPlaced = 9;
   for (let i = 0; i < map.length; i++) {
     for (let j = 0; j < map.length; j++) {
       const number = Math.floor(Math.random() * 9) + 1;
@@ -217,16 +218,5 @@ const initialize = () => {
   initializeMap();
 }
 
-// TODO:
-//  1. Optimize??? (Freezes on extreme difficulty)
-//  2. Modularize
-//  3. Lock in system mode to test (toggleable)
-//
-// Ideas:
-//  - Selection, Have to lock in so you can try different numbers and follow through and determine if it makes sense
-//  - paper (Notes)
-//  - Remaining Number left to be placed
-//  - Highlight all number of selected
-//  - Multiple input method for numbers
-//  - Highlight wrong in current context
+
 initialize();
