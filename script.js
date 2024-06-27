@@ -175,7 +175,7 @@ const completeSudoku = () => {
   return true;
 }
 
-const solveSudoku = () => {
+const solveSudoku = async (delay = 10) => {
   for (let row = 0; row < map.length; row++) {
     for (let column = 0; column < map.length; column++) {
       if (map[row][column] == 0) {
@@ -183,10 +183,11 @@ const solveSudoku = () => {
         const cell = cells[cellNumber];
         for (let number = 1; number <= 9; number++) {
           if (addNumber(cell, number)) {
-            if (solveSudoku()) return true;
+            await new Promise(resolve => setTimeout(resolve, delay));
+            if (await solveSudoku(delay)) return true;
           }
         }
-        removeNumber(cell, null, true)
+        removeNumber(cell, null, true);
         return false;
       }
     }
