@@ -2,7 +2,6 @@ let map = [];
 const rowSets = [];
 const columnSets = [];
 const gridSets = [];
-const ratioNumber = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 let cells = [];
 let selected = null;
 
@@ -62,6 +61,9 @@ const initializeMap = () => {
 };
 
 const generateMap = () => {
+  // 1. Place out random numbers
+  // 2. Create a solution
+  // 3. Remove numbers to create a puzzle
   for (let i = 0; i < 9; i++) {
     for (let j = 0; j < 9; j++) {
       const number = Math.floor(Math.random() * 9);
@@ -77,6 +79,14 @@ const generateMap = () => {
   }
   renderGrid();
 };
+
+const removeRandomCells = (difficulty) => {
+  // TODO:
+}
+
+const reset = () => {
+  // TODO:
+}
 
 const getCellFromRowAndColumn = (row, column) => {
   const subgridRowIndex = Math.floor(row / 3);
@@ -146,8 +156,8 @@ const removeNumber = (cell, key, solving) => {
 }
 
 const isValid = () => {
-  for (let i = 0; i < 9; i++) {
-    for (let j = 1; j < 9; j++) {
+  for (let i = 0; i < map.length; i++) {
+    for (let j = 1; j < map.length; j++) {
       if (!(gridSets[i].has(j) && rowSets[i].has(j) && columnSets[i].has(j))) {
         return false;
       }
@@ -157,8 +167,8 @@ const isValid = () => {
 }
 
 const completeSudoku = () => {
-  for (let row = 0; row < 9; row++) {
-    for (let column = 0; column < 9; column++) {
+  for (let row = 0; row < map.length; row++) {
+    for (let column = 0; column < map.length; column++) {
       if (map[row][column] == 0) return false;
     }
   }
@@ -166,8 +176,8 @@ const completeSudoku = () => {
 }
 
 const solveSudoku = () => {
-  for (let row = 0; row < 9; row++) {
-    for (let column = 0; column < 9; column++) {
+  for (let row = 0; row < map.length; row++) {
+    for (let column = 0; column < map.length; column++) {
       if (map[row][column] == 0) {
         const cellNumber = getCellFromRowAndColumn(row, column);
         const cell = cells[cellNumber];
@@ -188,14 +198,15 @@ const initialize = () => {
   createGrid();
   initializeMap()
   // generateMap();
-  // console.log(cells)
 }
 
 // TODO:
 //  1. Generate map with solve
 //  2. Reset button
-//  3. Optimize???
-//  4. Lock in system mode to test (toggleable)
+//  3. Optimize??? (Freezes on extreme difficulty)
+//  4. Modularize
+//  5. Visualizer
+//  6. Lock in system mode to test (toggleable)
 //
 // Ideas:
 //  - Selection, Have to lock in so you can try different numbers and follow through and determine if it makes sense
