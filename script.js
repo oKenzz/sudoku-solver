@@ -20,26 +20,26 @@ const createGrid = () => {
     }
   }
   document.addEventListener('keydown', (e) => addNumber(selected, Number(e.key)));
-  document.addEventListener('keydown', (e) => removeNumber(selected, e.key, false))
+  document.addEventListener('keydown', (e) => removeNumber(selected, e.key, false));
   const buttons = document.getElementsByClassName('basic-button');
   const generateButton = buttons[0];
   const solveButton = buttons[1];
-  generateButton.addEventListener("click", () => generateSudoku())
+  generateButton.addEventListener("click", () => generateSudoku());
   solveButton.addEventListener("click", () => solveSudoku(true));
 };
 
 const select = (cell, e) => {
   if (selected == cell) {
     selected = null;
-    e.target.style.backgroundColor = "white"
+    e.target.style.backgroundColor = "white";
   } else {
     if (selected != null) {
-      selected.style.backgroundColor = "white"
+      selected.style.backgroundColor = "white";
     }
     selected = cell;
-    e.target.style.backgroundColor = "CornFlowerBlue"
+    e.target.style.backgroundColor = "CornFlowerBlue";
   }
-}
+};
 
 const renderGrid = () => {
   for (let i = 0; i < map.length; i++) {
@@ -59,14 +59,13 @@ const initializeMap = () => {
     rowSets.push(new Set());
     columnSets.push(new Set());
     gridSets.push(new Set());
-    cells = [...document.getElementsByClassName('inner-grid')]
+    cells = [...document.getElementsByClassName('inner-grid')];
   }
 };
 
 const generateSudoku = async () => {
   // Start with reseting the map
   reset();
-  console.log("HELLO")
   let maxNumbersPlaced = 8;
   for (let i = 0; i < map.length; i++) {
     for (let j = 0; j < map.length; j++) {
@@ -96,7 +95,7 @@ const removeRandomCells = () => {
       }
     }
   }
-}
+};
 
 const reset = () => {
   for (let i = 0; i < map.length; i++) {
@@ -105,7 +104,7 @@ const reset = () => {
       removeNumber(cells[cellNumber], null, true);
     }
   }
-}
+};
 
 const getCellFromRowAndColumn = (row, column) => {
   const subgridRowIndex = Math.floor(row / 3);
@@ -140,15 +139,15 @@ const addNumber = (cell, number) => {
     const prevNumber = map[row][column];
     rowSets[row].delete(prevNumber);
     columnSets[column].delete(prevNumber);
-    gridSets[getGrid(index)].delete(prevNumber)
+    gridSets[getGrid(index)].delete(prevNumber);
     map[row][column] = number;
     rowSets[row].add(number);
     columnSets[column].add(number);
     gridSets[getGrid(index)].add(number);
-    cell.textContent = number
+    cell.textContent = number;
     if (completeSudoku()) {
       if (isValid()) {
-        console.log("Sudoku solved")
+        console.log("Sudoku solved");
       }
     }
     return true;
@@ -164,10 +163,7 @@ const removeNumber = (cell, key, solving) => {
     const column = coordinates.column;
     const number = map[row][column];
     if (key == "Backspace" && number != 0 || solving) {
-      console.log("HELLO")
-      console.log(map)
       map[row][column] = 0;
-      console.log(map)
       rowSets[row].delete(number);
       columnSets[column].delete(number);
       gridSets[getGrid(index)].delete(number);
@@ -218,16 +214,13 @@ const solveSudoku = async (visualizer, delay = 10) => {
 
 const initialize = () => {
   createGrid();
-  initializeMap()
-  // generateMap();
+  initializeMap();
 }
 
 // TODO:
-//  1. Generate map with solve
-//  2. Reset button
-//  3. Optimize??? (Freezes on extreme difficulty)
-//  4. Modularize
-//  6. Lock in system mode to test (toggleable)
+//  1. Optimize??? (Freezes on extreme difficulty)
+//  2. Modularize
+//  3. Lock in system mode to test (toggleable)
 //
 // Ideas:
 //  - Selection, Have to lock in so you can try different numbers and follow through and determine if it makes sense
@@ -236,8 +229,4 @@ const initialize = () => {
 //  - Highlight all number of selected
 //  - Multiple input method for numbers
 //  - Highlight wrong in current context
-
-// Problems:
-// - Removing all cells lead to incosistent cell sizes
-// - Uncaught error caused by removeNumber
-initialize()
+initialize();
